@@ -2,7 +2,7 @@
   if ('geolocation' in navigator) {
     console.log('geolocation available');
     navigator.geolocation.getCurrentPosition(async position => {
-    let lat, lon, climate, aq;
+    let lat, lon, json;
     try {
       lat = position.coords.latitude;
       lon = position.coords.longitude;
@@ -12,19 +12,18 @@
 
       const api_url = `/weather/${lat.toFixed(4)},${lon.toFixed(4)}`;
       const response = await fetch(api_url);
-      const json = await response.json();
+      json = await response.json();
       console.log(json);
 
-      const climate = json.climate;
-      const aq = json.aq.results;
-
-      document.getElementById('summary').textContent = climate.weather[0].main;
-      document.getElementById('temperature').textContent = Math.round(climate.main.temp);
-      document.getElementById('aq_parameter').textContent = aq[0].measurements[2].parameter;
-      document.getElementById('aq_value').textContent = aq[0].measurements[2].value;
-      document.getElementById('aq_date').textContent = aq[0].measurements[2].lastUpdated;
+      d_climate = json.climate;
+      d_aq = json.aq.results;
+      document.getElementById('summary').textContent = d_climate.weather[0].main;
+      document.getElementById('temperature').textContent = Math.round(d_climate.main.temp);
+      document.getElementById('aq_parameter').textContent = d_aq[0].measurements[2].parameter;
+      document.getElementById('aq_value').textContent = d_aq[0].measurements[2].value;
+      document.getElementById('aq_date').textContent = d_aq[0].measurements[2].lastUpdated;
       
-    
+      
     } catch (error) {
       console.log(error);
       aq = {value: -1}
@@ -32,7 +31,7 @@
     }
     const refresh = document.getElementById('refresh');
       refresh.addEventListener('click', async event => {
-        const data = {lat, lon, climate, aq};
+        const data = {lat, lon, json};
         const options = {
           method: 'POST',
           headers: {
